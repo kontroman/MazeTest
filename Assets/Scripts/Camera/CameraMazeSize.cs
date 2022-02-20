@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+//Масштабируем камеру под размеры нового лабиринта
 public class CameraMazeSize : MonoBehaviour
 {
     private void Start()

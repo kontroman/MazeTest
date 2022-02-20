@@ -170,6 +170,7 @@ public class MazeCreateor : MonoBehaviour
         return sizeX > sizeY ? sizeX : sizeY;
     }
 
+    //Для нового поиска пути надо ресетнуть клетки, с которых пршили
     public void ResetCellParents()
     {
         foreach (Cell _cell in cells)

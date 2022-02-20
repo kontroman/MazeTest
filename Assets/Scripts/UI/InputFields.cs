@@ -5,12 +5,12 @@ using UnityEngine.UI;
 public class InputFields : MonoBehaviour
 {
     [SerializeField] private MazeCreateor currentMaze;
-
-    public bool isX;
+    [SerializeField] private bool isX;
 
     private void Start()
     {
         var input = gameObject.GetComponent<InputField>();
+
         input.onEndEdit.AddListener(GetValues);
     }
 

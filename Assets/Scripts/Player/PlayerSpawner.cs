@@ -1,15 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerSpawner : MonoBehaviour
 {
-    private Cell currentCell;
+    private Cell currentCell; // летка на которой щас стоит шарик, не обновл€етс€ посто€нно
     public Cell CurrentCell { get { return currentCell; } }
 
     private void Start()
     {
         SetNewPositiion();
+
         MazeCreateor.Instance.onMazeDeleteAction += SetNewPositiion;
     }
 
@@ -18,17 +17,17 @@ public class PlayerSpawner : MonoBehaviour
         MazeCreateor.Instance.onMazeDeleteAction -= SetNewPositiion;
     }
 
-    public void SetNewCurrentCell(GameObject cell)
+    //ќбновл€ем текущую клетку что бы проложить правильный маршрут
+    public void SetNewCurrentCell()
     {
         RaycastHit hit;
         if (Physics.Raycast(transform.position, Vector3.down, out hit))
         {
             currentCell = hit.transform.gameObject.GetComponent<Cell>();
         }
-
-        //currentCell = cell.GetComponent<Cell>();
     }
 
+    //ѕри генерации лабиринта помещаем шарик в рандомную свободную клетку
     public void SetNewPositiion()
     {
         GameObject randomCell = MazeCreateor.Instance.GetRandomCell(CellType.Road);

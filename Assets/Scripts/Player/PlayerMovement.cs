@@ -1,17 +1,15 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] private float speed = 5f;
+
     private Transform targetCell;
 
-    public float speed = 5f;
-
-    int cellIndex = 0;
-    Vector3 currentPath;
+    private int cellIndex = 0;
+    private Vector3 currentPath;
 
     private List<Cell> myPath = new List<Cell>();
 
@@ -27,18 +25,20 @@ public class PlayerMovement : MonoBehaviour
         MazeCreateor.Instance.onMazeDeleteAction -= StopTargeting;
     }
 
+    //Если новый лабиринт - останавливаем движение
     public void StopTargeting()
     {
         myPath.Clear();
-        Debug.Log("Stop");
     }
 
+    //Установили точку к которой движемся
     public void SetTarget(Transform _transform)
     {
         targetCell = _transform;
         GetComponent<Pathfinding>().SearchForPath();
     }
 
+    //Приняли лист клеток и обработали его
     public void SetPath(List<Cell> path)
     {
         myPath.Clear();
@@ -56,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
             _cell.ChangeCellColor();
     }
 
+    //Движемся
     void Update()
     {
         if (myPath.Count == 0) return;
@@ -70,6 +71,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    //Получаем координаты следующей точки когда достигли предыдущей
     private Vector3 GetCurrentPathVector()
     {
         cellIndex--;

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,30 +5,32 @@ using UnityEngine;
 
 public class Pathfinding : MonoBehaviour
 {
-    List<Cell> openList = new List<Cell>(); //active
-    List<Cell> closeList = new List<Cell>(); //visited
-    List<Cell> finalpath = new List<Cell>();
+    List<Cell> openList = new List<Cell>();     //Клетки которые можно обработать
+    List<Cell> closeList = new List<Cell>();    //Клетки которые обработали
+    List<Cell> finalpath = new List<Cell>();    //Конечный путь по которому пойдет шарик
 
-    private Cell startCell;
-    private Cell currentCell;
-    private Cell targetCell;
+    private Cell startCell;     //Откуда идем
+    private Cell currentCell;   //Где сейчас стоим
+    private Cell targetCell;    //Куда идем
 
     public void SearchForPath()
     {
         //Небольшая задержка нужна что бы успели обновиться данные о том, на какой клетке сейчас шарик
-        StartCoroutine(delay());
+        StartCoroutine(DelayBeforePathFinding());
     }
 
-    IEnumerator delay()
+    IEnumerator DelayBeforePathFinding()
     {
         MazeCreateor.Instance.ResetCellParents();
 
+        //Обнуляем листы
         closeList = new List<Cell>();
         finalpath = new List<Cell>();
         openList = new List<Cell>();
 
         yield return new WaitForSeconds(0.05f);
 
+        //Инициализируем клетки
         targetCell = GetComponent<PlayerMovement>().GetTarget;
         currentCell = GetComponent<PlayerSpawner>().CurrentCell;
         startCell = currentCell;
@@ -38,7 +39,7 @@ public class Pathfinding : MonoBehaviour
 
         openList.Add(currentCell);
 
-
+        //Пошла обработка пути
         while (openList.Any())
         {
             Cell checkCell = openList.OrderBy(x => x.CostDistance).First();
@@ -46,21 +47,24 @@ public class Pathfinding : MonoBehaviour
             closeList.Add(checkCell);
             openList.Remove(checkCell);
 
+            //Если текущая обрабатываемая клетка совпадает по координатам с конечной
             if (checkCell.xCoord == targetCell.xCoord && checkCell.yCoord == targetCell.yCoord)
             {
+                //Заполняем финальный лист
                 finalpath.Add(checkCell);
 
                 do
-                {
                     finalpath.Add(finalpath.Last().Parent);
-                } 
                 while (finalpath.Last() != startCell);
 
+                //И отправляем шарику для движения
                 GetComponent<PlayerMovement>().SetPath(finalpath);
                 openList.Clear();
+
                 yield return null;
             }
 
+            //Берем соседние клетки от текущей, в которые можем двигаться
             var walkableTiles = GetWalkableTiles(checkCell, targetCell);
 
             foreach (var walkableTile in walkableTiles)
@@ -68,6 +72,7 @@ public class Pathfinding : MonoBehaviour
                 if (closeList.Any(x => x.xCoord == walkableTile.xCoord && x.yCoord == walkableTile.yCoord))
                     continue;
 
+                //Обрабатываем
                 if (closeList.Any(x => x.xCoord == walkableTile.xCoord && x.yCoord == walkableTile.yCoord))
                 {
                     var existingTile = closeList.First(x => x.xCoord == walkableTile.xCoord && x.yCoord == walkableTile.yCoord);
@@ -85,6 +90,7 @@ public class Pathfinding : MonoBehaviour
         }
     }
 
+    //Тут мы вытягиваем клетки сверху, снизу, слева и справа от текущей и проверяем на "подходящесть"
     private static List<Cell> GetWalkableTiles(Cell currentCell, Cell targetCell)
     {
         var possibleTiles = new List<Cell>();
