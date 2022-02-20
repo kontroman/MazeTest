@@ -49,12 +49,17 @@ public class MazeCreateor : MonoBehaviour
                 if (x == 0 || y == 0 || x == sizeX - 1 || y == sizeY - 1)
                     cells[x, y] = CreateCellWithType(CellType.Border);
                 //Иначе алгоритм выбирает какую клетку тыкнуть, дорогу или стену
+                //В зависимости от того четные стороны лабиринта или не четные
                 else if (x % 2 == (sizeX % 2 == 0 ? 1 : 0) && y % 2 == (sizeY % 2 == 0 ? 1 : 0))
                 {
+                    //С определенным шансом .1f
+                    //Если 0 - будет много стен, если .9f - то почти пустой лабиринт
                     if (UnityEngine.Random.value > .1f)
                     {
+                        //Пытаемся создать стену
                         cells[x, y] = CreateCellWithType(CellType.Wall); 
 
+                        //В точке соседней с текущей
                         int offsetX = UnityEngine.Random.value < .5f ? 0 : -1;
                         int offsetY = offsetX != 0 ? 0 : -1;
                         
